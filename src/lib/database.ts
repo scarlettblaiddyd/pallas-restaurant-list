@@ -33,6 +33,28 @@ export function insertRestaurant(restaurant: Restaurant) {
     );
 }
 
+export function updateRating(restaurantId: number, rating: number) {
+    const updateQuery = db.query(`
+        UPDATE restaurants
+        SET rating = $rating
+        WHERE id = $id`)
+    updateQuery.run(
+        {
+            $rating: rating,
+            $id: restaurantId
+        }
+    )
+}
+
+export function deleteRestaurant(restaurantId: number) {
+    const deleteQuery = db.query(`
+        DELETE FROM restaurants
+        WHERE id = $id`)
+    deleteQuery.run({
+        $id: restaurantId
+    })
+}
+
 export function loadRestaurants() : Restaurant[] {
     const getQuery = db.query(`SELECT * FROM restaurants`)
     const res = getQuery.all()

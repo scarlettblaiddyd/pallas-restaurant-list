@@ -5,8 +5,8 @@ import { cn } from "@/lib/utils";
 import { useState } from "react";
 import type Restaurant from "../types/restaurant";
 
-export default function NewRestaurantCard({ setRestaurants, className, ...props }: {
-    setRestaurants: React.Dispatch<React.SetStateAction<Restaurant[]>>
+export default function NewRestaurantCard({ onUpdate, className, ...props }: {
+    onUpdate: Function;
 } & React.ComponentProps<"div">) {
     const [dialogOpen, setDialogOpen] = useState(false)
     const [name, setName] = useState("");
@@ -27,6 +27,8 @@ export default function NewRestaurantCard({ setRestaurants, className, ...props 
             imgUrl,
             description
         }
+
+        // console.log(`Before API: ${JSON.stringify(newRestaurant)}`)
 
         // TODO: Would be great to ensure that the imgUrl actually points to a real image but...
         // that's out of scope for the amount of time I'm spending on this
@@ -53,7 +55,7 @@ export default function NewRestaurantCard({ setRestaurants, className, ...props 
             setImgUrl("")
             setDescription("")
             setDialogOpen(false)
-            setRestaurants(prev => [...prev, newRestaurant])
+            onUpdate()
         } catch(err) {
             // Not doing anything fancy here
             alert(err)
@@ -66,7 +68,7 @@ export default function NewRestaurantCard({ setRestaurants, className, ...props 
     // if I had more time
     <Card
       className={cn(
-        "aspect-square flex-grow basis-full xs:basis-1/2 md:basis-1/4 max-w-full xs:max-w-1/2 md:max-w-1/4",
+        "aspect-square flex-grow basis-full xs:basis-1/3 md:basis-1/4 max-w-full xs:max-w-1/3 md:max-w-1/4",
         className
       )}
       {...props}
@@ -82,9 +84,9 @@ export default function NewRestaurantCard({ setRestaurants, className, ...props 
                     </Button>
                 </Dialog.Trigger>
                 <Dialog.Portal>
-                    <Dialog.Overlay className="fixed inset-0 bg-neutral-800 data-[state=open]:opacity-95" />
-                    <Dialog.Content 
-                        className="fixed left-1/2 top-1/2 max-h-[85vh] w-[90vw] max-w-[500px] min-w-[calc(2*var(--smallest-width))] -translate-x-1/2 -translate-y-1/2 rounded-md bg-neutral-900 p-[25px] shadow-[var(--shadow-6)] focus:outline-none">
+                    <Dialog.Overlay className="fixed inset-0 bg-neutral-800 data-[state=open]:opacity-95 z-15" />
+                    <Dialog.Content aria-describedby={undefined}
+                        className="z-20 fixed left-1/2 top-1/2 max-h-[85vh] w-[90vw] max-w-[500px] min-w-[calc(2*var(--smallest-width))] -translate-x-1/2 -translate-y-1/2 rounded-md bg-neutral-900 p-[25px] shadow-[var(--shadow-6)] focus:outline-none">
                         <Dialog.Title className="mb-4 font-medium">
                             Add New Restaurant
                         </Dialog.Title>
@@ -196,8 +198,10 @@ export default function NewRestaurantCard({ setRestaurants, className, ...props 
                             <input
                                 className="inline-flex h-10 w-1/2 items-center justify-center rounded px-2 text-sm shadow-[0_0_0_1px] shadow-accent"
                                 id="imgUrl"
+                                value={imgUrl}
+                                onChange={(e) => setImgUrl(e.target.value)}
                                 minLength={3}
-                                placeholder="images.unsplash.com/photo-1502998070258-dc1338445ac2"
+                                placeholder="https://images.unsplash.com/photo-1502998070258-dc1338445ac2"
                                 required
                             />
                         </fieldset>
@@ -211,6 +215,9 @@ export default function NewRestaurantCard({ setRestaurants, className, ...props 
                             <input
                                 className="inline-flex h-10 w-1/2 items-center justify-center rounded px-2 text-sm shadow-[0_0_0_1px] shadow-accent"
                                 id="description"
+                                value={description}
+                                onChange={(e) => setDescription(e.target.value)}
+                                maxLength={80}
                                 placeholder="A great place for dinner!"
                             />
                         </fieldset>
